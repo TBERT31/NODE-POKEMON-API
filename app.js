@@ -10,7 +10,8 @@ const port = 3000;
 
 app
 .use(favicon(__dirname + '/favicon.ico'))
-.use(morgan('dev'));
+.use(morgan('dev'))
+.use(bodyParser.json());
 
 
 
@@ -36,6 +37,24 @@ app.post('/api/pokemons', (req, res) => {
     const message = `Le pokemon ${pokemonCreated.name} a bien été créé.`;
     res.json(success(message, pokemonCreated));
 });
+
+app.put('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const pokemonUpdated = {...req.body, id: id};
+    pokemons = pokemons.map(pokemon => {
+        return pokemon.id === id ? pokemonUpdated : pokemon;
+    });
+    const message = `Le pokemon ${pokemonUpdated.name} a bien été modifié`;
+    res.json(success(message, pokemonUpdated));
+});
+
+app.delete('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id)
+    const pokemonDeleted = pokemons.find(pokemon => pokemon.id === id)
+    pokemons = pokemons.filter(pokemon => pokemon.id !== id)
+    const message = `Le pokémon ${pokemonDeleted.name} a bien été supprimé.`
+    res.json(success(message, pokemonDeleted))
+  });
 
 app.listen(port, () => console.log(`Notre application Node est démarrée sur : http://localhost:${port}`));
 
